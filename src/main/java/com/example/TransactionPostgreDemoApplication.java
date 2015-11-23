@@ -28,8 +28,8 @@ public class TransactionPostgreDemoApplication {
     public DataSource dataSource(){
         DriverManagerDataSource ds = new DriverManagerDataSource();
         ds.setDriverClassName("org.postgresql.Driver");
-        ds.setUrl("jdbc:postgresql://localhost:5433/test");
-        ds.setUsername("test");
+        ds.setUrl("jdbc:postgresql://localhost:5433/dvdrental");
+        ds.setUsername("postgres");
         ds.setPassword("test");
         return ds;
     }
@@ -52,39 +52,44 @@ public class TransactionPostgreDemoApplication {
         ApplicationContext ctx = SpringApplication.run(TransactionPostgreDemoApplication.class, args);
 
         BookingService bookingService = ctx.getBean(BookingService.class);
-        bookingService.book("Alice", "Bob", "Carol");
-        Assert.assertEquals("First booking should work with no problem", 3,
-                bookingService.findAllBookings().size());
-
-        try {
-            bookingService.book("Chris", "Samuel");
-        }
-        catch (RuntimeException e) {
-            log.info("v--- The following exception is expect because 'Samuel' is too big for the DB ---v");
-            log.error(e.getMessage());
+        List<String> results = bookingService.findAllActor();
+        for (String result : results) {
+            log.info("Actor's first name : " + result);
         }
 
-        for (String person : bookingService.findAllBookings()) {
-            log.info("So far, " + person + " is booked.");
-        }
-        log.info("You shouldn't see Chris or Samuel. Samuel violated DB constraints, and Chris was rolled back in the same TX");
-        Assert.assertEquals("'Samuel' should have triggered a rollback", 3,
-                bookingService.findAllBookings().size());
-
-        try {
-            bookingService.book("Buddy", null);
-        }
-        catch (RuntimeException e) {
-            log.info("v--- The following exception is expect because null is not valid for the DB ---v");
-            log.error(e.getMessage());
-        }
-
-        for (String person : bookingService.findAllBookings()) {
-            log.info("So far, " + person + " is booked.");
-        }
-        log.info("You shouldn't see Buddy or null. null violated DB constraints, and Buddy was rolled back in the same TX");
-        Assert.assertEquals("'null' should have triggered a rollback", 3, bookingService
-                .findAllBookings().size());
+//        bookingService.book("Alice", "Bob", "Carol");
+//        Assert.assertEquals("First booking should work with no problem", 3,
+//                bookingService.findAllBookings().size());
+//
+//        try {
+//            bookingService.book("Chris", "Samuel");
+//        }
+//        catch (RuntimeException e) {
+//            log.info("v--- The following exception is expect because 'Samuel' is too big for the DB ---v");
+//            log.error(e.getMessage());
+//        }
+//
+//        for (String person : bookingService.findAllBookings()) {
+//            log.info("So far, " + person + " is booked.");
+//        }
+//        log.info("You shouldn't see Chris or Samuel. Samuel violated DB constraints, and Chris was rolled back in the same TX");
+//        Assert.assertEquals("'Samuel' should have triggered a rollback", 3,
+//                bookingService.findAllBookings().size());
+//
+//        try {
+//            bookingService.book("Buddy", null);
+//        }
+//        catch (RuntimeException e) {
+//            log.info("v--- The following exception is expect because null is not valid for the DB ---v");
+//            log.error(e.getMessage());
+//        }
+//
+//        for (String person : bookingService.findAllBookings()) {
+//            log.info("So far, " + person + " is booked.");
+//        }
+//        log.info("You shouldn't see Buddy or null. null violated DB constraints, and Buddy was rolled back in the same TX");
+//        Assert.assertEquals("'null' should have triggered a rollback", 3, bookingService
+//                .findAllBookings().size());
 
     }
 }

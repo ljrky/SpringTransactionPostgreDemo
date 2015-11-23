@@ -34,4 +34,16 @@ public class BookingService {
             }
         });
     }
+
+    public List<String> findAllActor(){
+        return jdbcTemplate.query("select FIRST_NAME " +
+                                  "from ACTOR " +
+                                  "where ACTOR_ID > 1 AND ACTOR_ID < 10", new RowMapper<String>() {
+            @Override
+            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getString("FIRST_NAME");
+            }
+        });
+    }
+
 }
